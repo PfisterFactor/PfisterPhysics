@@ -1,0 +1,8 @@
+[EasterEgg]
+-Weight=1
+-imageLocation ="EasterEgg.png"
+-ImageResX=64
+-ImageResY=64
+-SizeX=64
+-SizeY=64
+-gravity=0
