@@ -20,13 +20,10 @@ void Initialize() {
 	cout << "Physics game! -- Coded by Eric Pfister.\n___________________________________________________";
 	//ALL DEBUGGING CODE AHAHAHAHAHAH!
 	Texture Ball = Texture();
-	Ball.loadFromFile("EasterEgg.png");
-    Hitbox* circleptr1 = new Circle(Vector2f(0,0),64);
-    Hitbox* circleptr2 = new Circle(Vector2f(0,0),64);
-    Hitbox* circleptr3 = new Circle(Vector2f(0,0),64);
-	Object::CreateNewObject(Ball, Vector2f(40, 500),circleptr1);
-	Object::CreateNewObject(Ball, Vector2f(305,400),circleptr2);
-    Object::CreateNewObject(Ball, Vector2f(100,450),circleptr3);
+	Ball.loadFromFile("Ball.png");
+	Object::CreateNewObject(Ball, Vector2f(40, 500),Circular,Vector2f(64,64));
+	Object::CreateNewObject(Ball, Vector2f(305,400),Circular,Vector2f(64,64));
+    Object::CreateNewObject(Ball, Vector2f(100,450),Circular,Vector2f(64,64));
     
 	
     if (!FPSFont.loadFromFile("Font.ttf")) {
@@ -46,8 +43,8 @@ void Object::PhysicsUpdate() {
         Object::ActiveObjects[1].velocity = Vector2f(-5,0);
 	
     }
-	CollisionManager::checkCollisions();
-	CollisionManager::resolveCollisions();
+	CollisionManager::checkObjectCollisions();
+	CollisionManager::resolveObjectCollisions();
     for (int i=0; i < 10; i++) {
 		if (i != -1) {
 			Object* ActiveObject = &Object::ActiveObjects[i];

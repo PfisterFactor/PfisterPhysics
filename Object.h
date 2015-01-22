@@ -19,7 +19,7 @@ public:
 	static Object ActiveObjects[10];
 	//Returns a pointer to an Object class from its ID
 	static Object * GetObjectFromID(int IDQuery);
-	static int CreateNewObject(Texture Texture, Vector2f Position, Hitbox* Hitbox);
+	static int CreateNewObject(Texture Texture, Vector2f Position, hType Hitbox, Vector2f size);
     bool RemoveObject();
 	static void PhysicsUpdate();
 };

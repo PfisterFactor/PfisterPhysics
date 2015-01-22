@@ -1,17 +1,20 @@
 #include "CollisionManager.h"
 #include "Game.h"
+#define SCREENWIDTH 1024
+#define SCREENHEIGHT 768
 using namespace sf;
 using namespace std;
-vector<pair<int, int>> CollisionManager::collisionList(10);
+vector<pair<int, int>> CollisionManager::objectCollisionList(10);
+vector<pair<Object,int>> CollisionManager::wallCollisionList(40);
 bool CollisionManager::scanForPair(int ID1,int ID2) {
-	for (pair<int, int> p : collisionList) {
+	for (pair<int, int> p : objectCollisionList) {
 		if (((p.first == ID1 && p.second == ID2) || (p.first == ID2 && p.second == ID1))) {
 			return true;
 		}
 	}
 	return false;
 }
-vector<pair<int,int>> CollisionManager::checkCollisions() {
+vector<pair<int,int>> CollisionManager::checkObjectCollisions() {
     //Cycles through every shape on screen and returns a list of all collisions in frame
 	for (int baseID = 0; baseID < 10; baseID++) {
 		Object* basePointer = &Object::ActiveObjects[baseID]; //Pointer to Object::ActiveObjects[baseID] for convinence
@@ -22,8 +25,8 @@ vector<pair<int,int>> CollisionManager::checkCollisions() {
 					if (secondPointer->ID != -1) {
 						if (basePointer->hitbox->intersects(secondPointer->hitbox).first) {
 							if (!scanForPair(basePointer->ID, secondPointer->ID)) {
-								cout << "smoke weeeed errvydaay";
-								collisionList.push_back(pair<int, int>(basePointer->ID, secondPointer->ID));
+								cout << "Collision!\n";
+								objectCollisionList.push_back(pair<int, int>(basePointer->ID, secondPointer->ID));
 							}
 						}
 					}
@@ -32,14 +35,14 @@ vector<pair<int,int>> CollisionManager::checkCollisions() {
 		}
 	}
     
-	return collisionList;
+	return objectCollisionList;
 }
-int CollisionManager::resolveCollisions() {
-	if (collisionList.empty()) {
+int CollisionManager::resolveObjectCollisions() {
+	if (objectCollisionList.empty()) {
 		return -2;
 	}
 	else {
-		for (pair<int, int> collision : collisionList) {
+		for (pair<int, int> collision : objectCollisionList) {
 			Object* object1 = &Object::ActiveObjects[collision.first]; //Pointer to Object::ActiveObjects[collision.first] for convinence
 			Object* object2 = &Object::ActiveObjects[collision.second]; //Pointer to Object::ActiveObjects[collision.second] for convinence
 			//Implementation of elastic collision below.
@@ -54,7 +57,25 @@ int CollisionManager::resolveCollisions() {
             object1->velocity = Vector2f(newVelocityX1,newVelocityY1);
             object2->velocity = Vector2f(newVelocityX2,newVelocityY2);
 		}
-		collisionList.clear();
+		objectCollisionList.clear();
 		return -1;
 	}
+}
+vector<pair<Object,int>> CollisionManager::checkWallCollisions() {
+    for (int baseID = 0; baseID < 10; baseID++) {
+        Object* basePointer = &Object::ActiveObjects[baseID]; //Pointer to Object::ActiveObjects[baseID] for convinence
+        if (basePointer->position.x + basePointer->O_Texture.getSize().x > SCREENWIDTH) {
+            wallCollisionList.push_back(pair<Object,int>(*basePointer,1));
+        }
+        if (basePointer->position.x < 0) {
+            wallCollisionList.push_back(pair<Object,int>(*basePointer,1));
+        }
+        if (basePointer->position.y > SCREENHEIGHT) {
+            wallCollisionList.push_back(pair<Object,int>(*basePointer,3));
+        }
+        
+    }
+}
+int CollisionManager::resolveWallCollisions() {
+    
 }

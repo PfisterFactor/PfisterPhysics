@@ -3,12 +3,12 @@
 #define PI 3.14159
 using namespace std;
 using namespace sf;
-enum Type {Circular,Polygon,Uninitialized};
+enum hType {Circular,Polygon,Uninitialized};
 class Hitbox {
 protected:
-    Type type;
+    hType type;
 public:
-    Type getType() {
+    hType getType() {
         return type;
     }
     Vector2f position;

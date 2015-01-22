@@ -184,3 +184,5 @@ FakesAssemblies/
 *.sln
 *.vcxproj
 *.filters
+
+*.plist
