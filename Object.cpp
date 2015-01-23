@@ -13,7 +13,7 @@ using namespace std;
 }
 int Object::CreateNewObject(Texture Texture, Vector2f Position, hType Hitbox) {
 	 for (int index = 0; 0 < 10; index++) {
-		 if (ActiveObjects[index].ID == -1) {
+		 if (ActiveObjects[index].getID() == -1) {
 			 Object * NewObject = &ActiveObjects[index];
 			 NewObject->mass = 10;
 			 NewObject->ID = index;

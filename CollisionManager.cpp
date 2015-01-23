@@ -4,8 +4,9 @@
 #define SCREENHEIGHT 768
 using namespace sf;
 using namespace std;
+enum wallSides {Left,Top,Right,Bottom};
 vector<pair<int, int>> CollisionManager::objectCollisionList(10);
-vector<pair<Object,int>> CollisionManager::wallCollisionList(40);
+vector<pair<int,int>> CollisionManager::wallCollisionList(40);
 bool CollisionManager::scanForPair(int ID1,int ID2) {
 	for (pair<int, int> p : objectCollisionList) {
 		if (((p.first == ID1 && p.second == ID2) || (p.first == ID2 && p.second == ID1))) {
@@ -18,15 +19,15 @@ vector<pair<int,int>> CollisionManager::checkObjectCollisions() {
     //Cycles through every shape on screen and returns a list of all collisions in frame
 	for (int baseID = 0; baseID < 10; baseID++) {
 		Object* basePointer = &Object::ActiveObjects[baseID]; //Pointer to Object::ActiveObjects[baseID] for convinence
-		if (basePointer->ID != -1) {
+		if (basePointer->getID() != -1) {
 			for (int secondID = 0; secondID < 10; secondID++) {
 				if (secondID != baseID) {
 					Object* secondPointer = &Object::ActiveObjects[secondID]; //Pointer to Object::ActiveObjects[secondID] for convinence
-					if (secondPointer->ID != -1) {
+					if (secondPointer->getID() != -1) {
 						if (basePointer->hitbox->intersects(secondPointer->hitbox).first) {
-							if (!scanForPair(basePointer->ID, secondPointer->ID)) {
+							if (!scanForPair(basePointer->getID(), secondPointer->getID())) {
 								cout << "Collision!\n";
-								objectCollisionList.push_back(pair<int, int>(basePointer->ID, secondPointer->ID));
+								objectCollisionList.push_back(pair<int, int>(basePointer->getID(), secondPointer->getID()));
 							}
 						}
 					}
@@ -39,7 +40,7 @@ vector<pair<int,int>> CollisionManager::checkObjectCollisions() {
 }
 int CollisionManager::resolveObjectCollisions() {
 	if (objectCollisionList.empty()) {
-		return -2;
+		return 1;
 	}
 	else {
 		for (pair<int, int> collision : objectCollisionList) {
@@ -58,24 +59,41 @@ int CollisionManager::resolveObjectCollisions() {
             object2->velocity = Vector2f(newVelocityX2,newVelocityY2);
 		}
 		objectCollisionList.clear();
-		return -1;
+		return 0;
 	}
 }
-vector<pair<Object,int>> CollisionManager::checkWallCollisions() {
+vector<pair<int,int>> CollisionManager::checkWallCollisions() {
     for (int baseID = 0; baseID < 10; baseID++) {
         Object* basePointer = &Object::ActiveObjects[baseID]; //Pointer to Object::ActiveObjects[baseID] for convinence
-        if (basePointer->position.x + basePointer->O_Texture.getSize().x > SCREENWIDTH) {
-            wallCollisionList.push_back(pair<Object,int>(*basePointer,1));
+        if (basePointer->position.x + basePointer->getTexture().getSize().x > SCREENWIDTH) {
+            wallCollisionList.push_back(pair<int,int>(basePointer->getID(),Right));
         }
         if (basePointer->position.x < 0) {
-            wallCollisionList.push_back(pair<Object,int>(*basePointer,1));
+            wallCollisionList.push_back(pair<int,int>(basePointer->getID(),Left));
         }
-        if (basePointer->position.y > SCREENHEIGHT) {
-            wallCollisionList.push_back(pair<Object,int>(*basePointer,3));
+        if (basePointer->position.y + basePointer->getTexture().getSize().y > SCREENHEIGHT) {
+            wallCollisionList.push_back(pair<int,int>(basePointer->getID(),Bottom));
+        }
+        if (basePointer->position.y  < 0) {
+            wallCollisionList.push_back(pair<int,int>(basePointer->getID(),Top));
         }
         
     }
+    return wallCollisionList;
 }
 int CollisionManager::resolveWallCollisions() {
-    
+    if (wallCollisionList.empty()) {
+        return 1;
+    }
+    for (pair<int,int> pair : wallCollisionList) {
+        Object* basePointer = &Object::ActiveObjects[pair.first];
+        if (pair.second == Left || pair.second == Right) {
+            basePointer->velocity.x = -basePointer->velocity.x;
+        }
+        if (pair.second == Top || pair.second == Bottom) {
+            basePointer->velocity.y = -basePointer->velocity.y;
+        }
+    }
+    wallCollisionList.clear();
+    return 0;
 }

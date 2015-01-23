@@ -4,11 +4,19 @@ using namespace sf;
 using namespace std;
 
 class Object {
-public:
-	float mass;
+private:
     Texture O_Texture;
-    Sprite O_Sprite;
     int ID;
+public:
+    int getID() {
+        return ID;
+    }
+    Texture getTexture() {
+        return O_Texture;
+    }
+    float mass;
+    Sprite O_Sprite;
+    Vector2f size;
     Vector2f position;
     Vector2f acceleration;
     Vector2f velocity;
@@ -19,7 +27,7 @@ public:
 	static Object ActiveObjects[10];
 	//Returns a pointer to an Object class from its ID
 	static Object * GetObjectFromID(int IDQuery);
-	static int CreateNewObject(Texture Texture, Vector2f Position, hType Hitbox, Vector2f size);
+	static int CreateNewObject(Texture Texture, Vector2f Position, hType Hitbox);
     bool RemoveObject();
 	static void PhysicsUpdate();
 };

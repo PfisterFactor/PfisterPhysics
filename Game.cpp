@@ -21,9 +21,11 @@ void Initialize() {
 	//ALL DEBUGGING CODE AHAHAHAHAHAH!
 	Texture Ball = Texture();
 	Ball.loadFromFile("Ball.png");
-	Object::CreateNewObject(Ball, Vector2f(40, 500),Circular,Vector2f(64,64));
-	Object::CreateNewObject(Ball, Vector2f(305,400),Circular,Vector2f(64,64));
-    Object::CreateNewObject(Ball, Vector2f(100,450),Circular,Vector2f(64,64));
+	Object::CreateNewObject(Ball, Vector2f(40, 500),Circular);
+	Object::CreateNewObject(Ball, Vector2f(305,400),Circular);
+    Object::CreateNewObject(Ball, Vector2f(100,450),Circular);
+    Object::CreateNewObject(Ball, Vector2f(400,450),Circular);
+    Object::CreateNewObject(Ball, Vector2f(500,450),Circular);
     
 	
     if (!FPSFont.loadFromFile("Font.ttf")) {
@@ -44,7 +46,9 @@ void Object::PhysicsUpdate() {
 	
     }
 	CollisionManager::checkObjectCollisions();
+    CollisionManager::checkWallCollisions();
 	CollisionManager::resolveObjectCollisions();
+    CollisionManager::resolveWallCollisions();
     for (int i=0; i < 10; i++) {
 		if (i != -1) {
 			Object* ActiveObject = &Object::ActiveObjects[i];
@@ -67,7 +71,7 @@ void Update() {
 	Object::PhysicsUpdate();
 	for (int index = 0; index < 10; index++) {
 		Object * UpdateObject = &Object::ActiveObjects[index];
-		if (UpdateObject->ID != -1) {
+		if (UpdateObject->getID() != -1) {
 			UpdateObject->O_Sprite.setPosition(Vector2f(UpdateObject->position.x,UpdateObject->position.y));
             UpdateObject->hitbox->position = Vector2f(UpdateObject->position.x,UpdateObject->position.y);
 		}
@@ -80,7 +84,7 @@ void Draw() {
 	//Put drawing code in here
 	Game::_mainWindow.clear(Color(255, 255, 255));
 	for (int index = 0; index < 10; index++) {
-		if (Object::ActiveObjects[index].ID != -1) {
+		if (Object::ActiveObjects[index].getID() != -1) {
 			Game::_mainWindow.draw(Object::ActiveObjects[index].O_Sprite);
 			Text FPS = Text("FPS = " + to_string((int)(1/delta)), FPSFont, 30U);
 			FPS.setPosition(0, 0);
