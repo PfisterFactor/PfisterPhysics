@@ -90,7 +90,6 @@ public:
 			 Circle* intersecteeCircle = dynamic_cast<Circle*>(intersectee); //Downcast a hitbox as a circle.
 			 if (boundingBox.intersects(intersecteeCircle->getBoundBox())) {
 
-
 				 intersecteeCircle->center = Vector2f(intersecteeCircle->position.x + intersecteeCircle->radius, intersecteeCircle->position.y + intersecteeCircle->radius);
 				 long double distanceBetweenCenters = pow((intersecteeCircle->center.x - center.x), 2) + pow((intersecteeCircle->center.y - center.y), 2); // Distance formula between points. (x2 - x1)^2 + (y2 - y1)^2
 				 //cout << "-" << distanceBetweenCenters;

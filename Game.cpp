@@ -8,6 +8,7 @@ using namespace sf;
 using namespace std;
 Clock deltaClock = Clock();
 float delta = 0;
+bool justStarted = false;
 Game::GameState Game::_gameState = Uninitialized;
 bool Debug = false;
 sf::RenderWindow Game::_mainWindow;
@@ -15,7 +16,7 @@ Object Object::ActiveObjects[10];
 
 Font FPSFont = Font();
 void Initialize() {
-	Game::_mainWindow.setVerticalSyncEnabled(true);
+	Game::_mainWindow.setFramerateLimit(60);
 	//Throw in object declarations and stuff here
 	cout << "Physics game! -- Coded by Eric Pfister.\n___________________________________________________";
 	//ALL DEBUGGING CODE AHAHAHAHAHAH!
@@ -26,14 +27,11 @@ void Initialize() {
     Object::CreateNewObject(Ball, Vector2f(100,450),Circular);
     Object::CreateNewObject(Ball, Vector2f(400,450),Circular);
     Object::CreateNewObject(Ball, Vector2f(500,450),Circular);
-    
-	
-    if (!FPSFont.loadFromFile("Font.ttf")) {
-		throw io_errc::stream;
-    }
-	
-	deltaClock.restart();
 	//END OF DEBUGGING CODE! AHAHAHAHA-oh.
+	if (!FPSFont.loadFromFile("Font.ttf")) {
+		throw io_errc::stream;
+	}
+	deltaClock.restart();
 
 
 }
@@ -46,10 +44,12 @@ void Object::PhysicsUpdate() {
 		}
 	
     }
-	CollisionManager::checkObjectCollisions();
-    CollisionManager::checkWallCollisions();
-	CollisionManager::resolveObjectCollisions();
-    CollisionManager::resolveWallCollisions();
+	if (justStarted) {
+		CollisionManager::checkObjectCollisions();
+		CollisionManager::checkWallCollisions();
+		CollisionManager::resolveObjectCollisions();
+		CollisionManager::resolveWallCollisions();
+	}
     for (int i=0; i < 10; i++) {
 		if (i != -1) {
 			Object* ActiveObject = &Object::ActiveObjects[i];
@@ -63,12 +63,10 @@ void Object::PhysicsUpdate() {
 
     
 	//cout << Object::ActiveObjects[0].hitbox->intersects(Object::ActiveObjects[1].hitbox).first;
-    
+	justStarted = true;
 }
 void Update() {
 	//Put Update per frame code related to game here
-	delta = deltaClock.getElapsedTime().asSeconds();
-	deltaClock.restart();
 	Object::PhysicsUpdate();
 	for (int index = 0; index < 10; index++) {
 		Object * UpdateObject = &Object::ActiveObjects[index];
@@ -77,9 +75,8 @@ void Update() {
             UpdateObject->hitbox->position = Vector2f(UpdateObject->position.x,UpdateObject->position.y);
 		}
 	}
-
-
-
+	delta = deltaClock.getElapsedTime().asSeconds();
+	deltaClock.restart();
 }
 void Draw() {
 	//Put drawing code in here
@@ -87,7 +84,7 @@ void Draw() {
 	for (int index = 0; index < 10; index++) {
 		if (Object::ActiveObjects[index].getID() != -1) {
 			Game::_mainWindow.draw(Object::ActiveObjects[index].O_Sprite);
-			Text FPS = Text("FPS = " + to_string((int)(1/delta)), FPSFont, 30U);
+			Text FPS = Text("FPS = " + to_string((Uint8)(1 / delta)), FPSFont, 30U);
 			FPS.setPosition(0, 0);
 			FPS.setColor(Color::Red);
 			Game::_mainWindow.draw(FPS);
