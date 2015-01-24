@@ -26,7 +26,6 @@ vector<pair<int,int>> CollisionManager::checkObjectCollisions() {
 					if (secondPointer->getID() != -1) {
 						if (basePointer->hitbox->intersects(secondPointer->hitbox).first) {
 							if (!scanForPair(basePointer->getID(), secondPointer->getID())) {
-								cout << "Collision!\n";
 								objectCollisionList.push_back(pair<int, int>(basePointer->getID(), secondPointer->getID()));
 							}
 						}
@@ -47,6 +46,12 @@ int CollisionManager::resolveObjectCollisions() {
 			Object* object1 = &Object::ActiveObjects[collision.first]; //Pointer to Object::ActiveObjects[collision.first] for convinence
 			Object* object2 = &Object::ActiveObjects[collision.second]; //Pointer to Object::ActiveObjects[collision.second] for convinence
 			//Implementation of elastic collision below.
+			if (object1->velocity == Vector2f(0, 0)) {
+				object1->velocity = Vector2f(1, 1);
+			}
+			if (object2->velocity == Vector2f(0, 0)) {
+				object2->velocity = Vector2f(1, 1);
+			}
             float newVelocityX1 = (object1->velocity.x * (object1->mass - object2->mass) + (2 * object2->mass * object2->velocity.x)) / (object1->mass + object2->mass);
             float newVelocityY1 = (object1->velocity.y * (object1->mass - object2->mass) + (2 * object2->mass * object2->velocity.y)) / (object1->mass + object2->mass);
             float newVelocityX2 = (object2->velocity.x * (object2->mass - object1->mass) + (2 * object1->mass * object1->velocity.x)) / (object2->mass + object1->mass);

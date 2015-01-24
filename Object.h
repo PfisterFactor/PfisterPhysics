@@ -1,4 +1,5 @@
-
+#define SCREENWIDTH 1024
+#define SCREENHEIGHT 768
 #include "Hitbox.h"
 using namespace sf;
 using namespace std;
@@ -21,6 +22,17 @@ public:
     Vector2f acceleration;
     Vector2f velocity;
     Hitbox* hitbox;
+	bool isOffScreen() {
+		if (position.x + O_Texture.getSize().x > SCREENWIDTH
+			|| position.y + O_Texture.getSize().y > SCREENHEIGHT
+			|| position.x < 0
+			|| position.y < 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
     Object() : ID(-1), position(Vector2f(0,0)) {}
 	//NullObject to return when GetObjectFromID fails.
 	//Max amount of objects allowed on screen

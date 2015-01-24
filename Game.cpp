@@ -41,8 +41,9 @@ void Object::PhysicsUpdate() {
     if (Mouse::isButtonPressed(Mouse::Button::Left)) {
         /*Vector2i mousePos = Mouse::getPosition(Game::_mainWindow);
         Object::ActiveObjects[0].position = Vector2f(mousePos.x - 32,mousePos.y - 32);*/
-		Object::ActiveObjects[0].velocity = Vector2f(5, -5);
-        Object::ActiveObjects[1].velocity = Vector2f(-5,0);
+		for (int i = 0; i < 10; i++) {
+			Object::ActiveObjects[i].velocity = Vector2f(i + 2, i + 4);
+		}
 	
     }
 	CollisionManager::checkObjectCollisions();
