@@ -57,6 +57,7 @@ int CollisionManager::resolveObjectCollisions() {
             float newVelocityX2 = (object2->velocity.x * (object2->mass - object1->mass) + (2 * object1->mass * object1->velocity.x)) / (object2->mass + object1->mass);
             float newVelocityY2 = (object2->velocity.y * (object2->mass - object1->mass) + (2 * object1->mass * object1->velocity.y)) / (object2->mass + object1->mass);
             //Sets position + velocity so shapes dont get stuck
+            Vector2f delta = object2->position - object1->position;
             object1->position += Vector2f(newVelocityX1,newVelocityX2);
             object2->position += Vector2f(newVelocityX2,newVelocityY2);
             
@@ -94,9 +95,12 @@ int CollisionManager::resolveWallCollisions() {
         Object* basePointer = &Object::ActiveObjects[pair.first];
         if (pair.second == Left || pair.second == Right) {
             basePointer->velocity.x = -basePointer->velocity.x;
+            basePointer->position.x += basePointer->velocity.x;
         }
         if (pair.second == Top || pair.second == Bottom) {
             basePointer->velocity.y = -basePointer->velocity.y;
+            basePointer->position.y += basePointer->velocity.y;
+            
         }
     }
     wallCollisionList.clear();

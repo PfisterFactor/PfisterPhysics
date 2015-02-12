@@ -8,6 +8,21 @@ class Hitbox {
 protected:
     hType type;
 public:
+    static double getLength(Vector2f a, Vector2f b) {
+        double returnLength = sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2));
+        return returnLength;
+    }
+    static double getLength(Vector2f a, Vector2f b, bool unSquared) {
+        double returnLength;
+        if (unSquared) {
+            returnLength = pow(b.x - a.x, 2) + pow(b.y - a.y, 2);
+        }
+        else {
+            returnLength = sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2));
+          
+        }
+        return returnLength;
+    }
     hType getType() {
         return type;
     }
@@ -70,7 +85,7 @@ public:
         center = Vector2f(position.x + radius, position.y + radius);
 		updateBounds();
 		if (boundingBox.contains(point)) {
-			long double distance = (pow(point.x - center.x, 2) + pow(point.y - center.y, 2)); // Distance formula between points. (x2 - x1)^2 + (y2 - y1)^2
+			long double distance = getLength(center, point,true);// Distance formula between points. (x2 - x1)^2 + (y2 - y1)^2
 
 			if (distance <= radiusSquared) {
 				return true;
@@ -91,7 +106,7 @@ public:
 			 if (boundingBox.intersects(intersecteeCircle->getBoundBox())) {
 
 				 intersecteeCircle->center = Vector2f(intersecteeCircle->position.x + intersecteeCircle->radius, intersecteeCircle->position.y + intersecteeCircle->radius);
-				 long double distanceBetweenCenters = pow((intersecteeCircle->center.x - center.x), 2) + pow((intersecteeCircle->center.y - center.y), 2); // Distance formula between points. (x2 - x1)^2 + (y2 - y1)^2
+				 long double distanceBetweenCenters = getLength(center,intersecteeCircle->center,true); // Distance formula between points. (x2 - x1)^2 + (y2 - y1)^2
 				 //cout << "-" << distanceBetweenCenters;
 				 //cout << "-" << radiusSquared*2 << "-";
 				 if (distanceBetweenCenters <= radiusSquared) {
