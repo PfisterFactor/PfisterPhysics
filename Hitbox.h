@@ -41,6 +41,7 @@ private:
 		boundingBox.height = radius;
 		boundingBox.width = radius;
 	}
+    //Bitwise wizardry, thank you Stack Overflow
     size_t highestOneBitPosition(Uint64 a) {
         size_t bits=0;
         while (a!=0) {
@@ -53,6 +54,8 @@ private:
         size_t a_bits=highestOneBitPosition(a);
         return (a_bits*b<=32);
     }
+    //End of Bitwise wizardry
+    
     long double radiusSquared; //Radius squared for faster calculation of contains and instersects
 public:
 	FloatRect getBoundBox() {
@@ -81,7 +84,6 @@ public:
         return Vector2f(-1,-1);
     }
      bool contains(Vector2f point) {
-		
         center = Vector2f(position.x + radius, position.y + radius);
 		updateBounds();
 		if (boundingBox.contains(point)) {

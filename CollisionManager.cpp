@@ -52,17 +52,19 @@ int CollisionManager::resolveObjectCollisions() {
 			if (object2->velocity == Vector2f(0, 0)) {
 				object2->velocity = Vector2f(1, 1);
 			}
-            float newVelocityX1 = (object1->velocity.x * (object1->mass - object2->mass) + (2 * object2->mass * object2->velocity.x)) / (object1->mass + object2->mass);
-            float newVelocityY1 = (object1->velocity.y * (object1->mass - object2->mass) + (2 * object2->mass * object2->velocity.y)) / (object1->mass + object2->mass);
-            float newVelocityX2 = (object2->velocity.x * (object2->mass - object1->mass) + (2 * object1->mass * object1->velocity.x)) / (object2->mass + object1->mass);
-            float newVelocityY2 = (object2->velocity.y * (object2->mass - object1->mass) + (2 * object1->mass * object1->velocity.y)) / (object2->mass + object1->mass);
-            //Sets position + velocity so shapes dont get stuck
-            Vector2f delta = object2->position - object1->position;
-            object1->position += Vector2f(newVelocityX1,newVelocityX2);
-            object2->position += Vector2f(newVelocityX2,newVelocityY2);
+            Vector2f newVelocityObj1 =
+                Vector2f(
+                         (object1->velocity.x * (object1->mass - object2->mass) + (2 * object2->mass * object2->velocity.x)) / (object1->mass + object2->mass),
+                         (object1->velocity.y * (object1->mass - object2->mass) + (2 * object2->mass * object2->velocity.y)) / (object1->mass + object2->mass));
             
-            object1->velocity = Vector2f(newVelocityX1,newVelocityY1);
-            object2->velocity = Vector2f(newVelocityX2,newVelocityY2);
+            Vector2f newVelocityObj2 = Vector2f((object2->velocity.x * (object2->mass - object1->mass) + (2 * object1->mass * object1->velocity.x)) / (object2->mass + object1->mass),(object2->velocity.y * (object2->mass - object1->mass) + (2 * object1->mass * object1->velocity.y)) / (object2->mass + object1->mass));
+            
+            //Sets position + velocity so shapes dont get stuck
+            object1->position += Vector2f(newVelocityObj1.x,newVelocityObj1.y);
+            object2->position += Vector2f(newVelocityObj2.x,newVelocityObj2.y);
+            
+            object1->velocity = Vector2f(newVelocityObj1.x,newVelocityObj1.y);
+            object2->velocity = Vector2f(newVelocityObj2.x,newVelocityObj2.y);
 		}
 		objectCollisionList.clear();
 		return 0;
@@ -93,13 +95,24 @@ int CollisionManager::resolveWallCollisions() {
     }
     for (pair<int,int> pair : wallCollisionList) {
         Object* basePointer = &Object::ActiveObjects[pair.first];
+        
         if (pair.second == Left || pair.second == Right) {
             basePointer->velocity.x = -basePointer->velocity.x;
-            basePointer->position.x += basePointer->velocity.x;
+            if (pair.second == Right) {
+                basePointer->position = Vector2f(basePointer->position.x + (SCREENWIDTH - basePointer->position.x - 64),basePointer->position.y);
+            }
+            else if (pair.second == Left) {
+                basePointer->position = Vector2f(0,basePointer->position.y);
+            }
         }
         if (pair.second == Top || pair.second == Bottom) {
             basePointer->velocity.y = -basePointer->velocity.y;
-            basePointer->position.y += basePointer->velocity.y;
+            if (pair.second == Top) {
+                basePointer->position = Vector2f(basePointer->position.x, 0);
+            }
+            else if (pair.second == Bottom) {
+                basePointer->position = Vector2f(basePointer->position.x, basePointer->position.y + (SCREENHEIGHT - basePointer->position.y - 64));
+            }
             
         }
     }
