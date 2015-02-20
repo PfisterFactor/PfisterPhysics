@@ -22,17 +22,6 @@ public:
     Vector2f acceleration;
     Vector2f velocity;
     Hitbox* hitbox;
-	bool isOffScreen() {
-		if (position.x + O_Texture.getSize().x > SCREENWIDTH
-			|| position.y + O_Texture.getSize().y > SCREENHEIGHT
-			|| position.x < 0
-			|| position.y < 0) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
     Object() : ID(-1), position(Vector2f(0,0)) {}
 	//NullObject to return when GetObjectFromID fails.
 	//Max amount of objects allowed on screen
@@ -40,6 +29,7 @@ public:
 	//Returns a pointer to an Object class from its ID
 	static Object * GetObjectFromID(int IDQuery);
 	static int CreateNewObject(Texture Texture, Vector2f Position, hType Hitbox);
+
     bool RemoveObject();
 	static void PhysicsUpdate();
 };

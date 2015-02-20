@@ -5,8 +5,8 @@
 using namespace sf;
 using namespace std;
 enum wallSides {Left,Top,Right,Bottom};
-vector<pair<int, int>> CollisionManager::objectCollisionList(10);
-vector<pair<int,int>> CollisionManager::wallCollisionList(40);
+vector<pair<int, int>> CollisionManager::objectCollisionList;
+vector<pair<int,int>> CollisionManager::wallCollisionList;
 bool CollisionManager::scanForPair(int ID1,int ID2) {
 	for (pair<int, int> p : objectCollisionList) {
 		if (((p.first == ID1 && p.second == ID2) || (p.first == ID2 && p.second == ID1))) {
@@ -15,7 +15,7 @@ bool CollisionManager::scanForPair(int ID1,int ID2) {
 	}
 	return false;
 }
-vector<pair<int,int>> CollisionManager::checkObjectCollisions() {
+void CollisionManager::checkObjectCollisions() {
     //Cycles through every shape on screen and returns a list of all collisions in frame
 	for (int baseID = 0; baseID < 10; baseID++) {
 		Object* basePointer = &Object::ActiveObjects[baseID]; //Pointer to Object::ActiveObjects[baseID] for convinence
@@ -34,10 +34,9 @@ vector<pair<int,int>> CollisionManager::checkObjectCollisions() {
 			}
 		}
 	}
-    
-	return objectCollisionList;
 }
 int CollisionManager::resolveObjectCollisions() {
+	checkObjectCollisions();
 	if (objectCollisionList.empty()) {
 		return 1;
 	}
@@ -70,7 +69,7 @@ int CollisionManager::resolveObjectCollisions() {
 		return 0;
 	}
 }
-vector<pair<int,int>> CollisionManager::checkWallCollisions() {
+void CollisionManager::checkWallCollisions() {
     for (int baseID = 0; baseID < 10; baseID++) {
         Object* basePointer = &Object::ActiveObjects[baseID]; //Pointer to Object::ActiveObjects[baseID] for convinence
         if (basePointer->position.x + basePointer->getTexture().getSize().x > SCREENWIDTH) {
@@ -87,10 +86,10 @@ vector<pair<int,int>> CollisionManager::checkWallCollisions() {
         }
         
     }
-    return wallCollisionList;
 }
 int CollisionManager::resolveWallCollisions() {
-    if (wallCollisionList.empty()) {
+	checkWallCollisions();
+	if (wallCollisionList.empty()) {
         return 1;
     }
     for (pair<int,int> pair : wallCollisionList) {

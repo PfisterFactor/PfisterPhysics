@@ -13,10 +13,10 @@ Game::GameState Game::_gameState = Uninitialized;
 bool Debug = false;
 sf::RenderWindow Game::_mainWindow;
 Object Object::ActiveObjects[10];
+Font *FPSFont = new Font();
 
-Font FPSFont = Font();
 void Initialize() {
-	Game::_mainWindow.setFramerateLimit(60);
+	Game::_mainWindow.setVerticalSyncEnabled(true);
 	//Throw in object declarations and stuff here
 	cout << "Physics game! -- Coded by Eric Pfister.\n___________________________________________________";
 	//ALL DEBUGGING CODE AHAHAHAHAHAH!
@@ -28,7 +28,7 @@ void Initialize() {
     Object::CreateNewObject(Ball, Vector2f(400,450),Circular);
     Object::CreateNewObject(Ball, Vector2f(500,450),Circular);
 	//END OF DEBUGGING CODE! AHAHAHAHA-oh.
-	if (!FPSFont.loadFromFile("Font.ttf")) {
+	if (!FPSFont->loadFromFile("Font.ttf")) {
 		throw io_errc::stream;
 	}
 	deltaClock.restart();
@@ -45,8 +45,6 @@ void Object::PhysicsUpdate() {
 	
     }
 	if (justStarted) {
-		CollisionManager::checkObjectCollisions();
-		CollisionManager::checkWallCollisions();
 		CollisionManager::resolveObjectCollisions();
 		CollisionManager::resolveWallCollisions();
 	}
@@ -78,16 +76,19 @@ void Update() {
 	delta = deltaClock.getElapsedTime().asSeconds();
 	deltaClock.restart();
 }
+
 void Draw() {
 	//Put drawing code in here
+	
 	Game::_mainWindow.clear(Color(255, 255, 255));
+	Text FPS = Text("FPS = " + to_string((Uint8)(1 / delta)), *FPSFont, 30U);
+	FPS.setPosition(0, 0);
+	FPS.setColor(Color::Red);
+	Game::_mainWindow.draw(FPS);
 	for (int index = 0; index < 10; index++) {
 		if (Object::ActiveObjects[index].getID() != -1) {
 			Game::_mainWindow.draw(Object::ActiveObjects[index].O_Sprite);
-			Text FPS = Text("FPS = " + to_string((Uint8)(1 / delta)), FPSFont, 30U);
-			FPS.setPosition(0, 0);
-			FPS.setColor(Color::Red);
-			Game::_mainWindow.draw(FPS);
+			
 		}
 	}
 	//cout << endl << test.x << ", " << test.y;
