@@ -12,7 +12,6 @@ bool justStarted = false;
 Game::GameState Game::_gameState = Uninitialized;
 bool Debug = false;
 sf::RenderWindow Game::_mainWindow;
-Object Object::ActiveObjects[10];
 Font *FPSFont = new Font();
 
 void Initialize() {
@@ -22,11 +21,11 @@ void Initialize() {
 	//ALL DEBUGGING CODE AHAHAHAHAHAH!
 	Texture Ball = Texture();
 	Ball.loadFromFile("Ball.png");
-	Object::CreateNewObject(Ball, Vector2f(40, 500),Circular);
+	Object::CreateNewObject(Ball, Vector2f(40, 400),Circular);
 	Object::CreateNewObject(Ball, Vector2f(305,400),Circular);
-    Object::CreateNewObject(Ball, Vector2f(100,450),Circular);
-    Object::CreateNewObject(Ball, Vector2f(400,450),Circular);
-    Object::CreateNewObject(Ball, Vector2f(500,450),Circular);
+    Object::CreateNewObject(Ball, Vector2f(100,325),Circular);
+    Object::CreateNewObject(Ball, Vector2f(400,250),Circular);
+    Object::CreateNewObject(Ball, Vector2f(500,175),Circular);
 	//END OF DEBUGGING CODE! AHAHAHAHA-oh.
 	if (!FPSFont->loadFromFile("Font.ttf")) {
 		throw io_errc::stream;
@@ -40,7 +39,8 @@ void Object::PhysicsUpdate() {
         /*Vector2i mousePos = Mouse::getPosition(Game::_mainWindow);
         Object::ActiveObjects[0].position = Vector2f(mousePos.x - 32,mousePos.y - 32);*/
 		for (int i = 0; i < 10; i++) {
-			Object::ActiveObjects[i].velocity = Vector2f(i + 2, i + 4);
+			if (Object::ActiveObjects[i].getID() != -1)
+				Object::ActiveObjects[i].velocity = Vector2f(i + 2, i + 4);;
 		}
 	
     }

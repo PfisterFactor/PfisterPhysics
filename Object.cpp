@@ -2,6 +2,7 @@
 #include "Game.h"
 using namespace sf;
 using namespace std;
+vector<Object> Object::ActiveObjects = vector<Object>(10);
  Object* Object::GetObjectFromID(int IDQuery) {
 	for (int index = 0; index < 10; index++) {
 		if (ActiveObjects[index].ID == IDQuery) {
@@ -19,6 +20,7 @@ int Object::CreateNewObject(Texture Texture, Vector2f Position, hType Hitbox) {
 			 NewObject->ID = index;
 			 NewObject->position = Position;
 			 NewObject->O_Texture = Texture;
+			 NewObject->size = Texture.getSize();
 			 NewObject->O_Sprite.setTexture(ActiveObjects[index].O_Texture);
              switch (Hitbox) {
                  case Circular:

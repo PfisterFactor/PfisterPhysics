@@ -5,8 +5,8 @@
 using namespace sf;
 using namespace std;
 enum wallSides {Left,Top,Right,Bottom};
-vector<pair<int, int>> CollisionManager::objectCollisionList;
-vector<pair<int,int>> CollisionManager::wallCollisionList;
+vector<pair<int, int>> CollisionManager::objectCollisionList(20);
+vector<pair<int,int>> CollisionManager::wallCollisionList(20);
 bool CollisionManager::scanForPair(int ID1,int ID2) {
 	for (pair<int, int> p : objectCollisionList) {
 		if (((p.first == ID1 && p.second == ID2) || (p.first == ID2 && p.second == ID1))) {
@@ -41,9 +41,9 @@ int CollisionManager::resolveObjectCollisions() {
 		return 1;
 	}
 	else {
-		for (pair<int, int> collision : objectCollisionList) {
-			Object* object1 = &Object::ActiveObjects[collision.first]; //Pointer to Object::ActiveObjects[collision.first] for convinence
-			Object* object2 = &Object::ActiveObjects[collision.second]; //Pointer to Object::ActiveObjects[collision.second] for convinence
+		for (pair<int,int> collision : objectCollisionList) {
+			Object* object1(&Object::ActiveObjects[collision.first]); //Pointer to Object::ActiveObjects[collision.first] for convinence
+			Object* object2(&Object::ActiveObjects[collision.second]); //Pointer to Object::ActiveObjects[collision.second] for convinence
 			//Implementation of elastic collision below.
 			if (object1->velocity == Vector2f(0, 0)) {
 				object1->velocity = Vector2f(1, 1);
@@ -72,13 +72,13 @@ int CollisionManager::resolveObjectCollisions() {
 void CollisionManager::checkWallCollisions() {
     for (int baseID = 0; baseID < 10; baseID++) {
         Object* basePointer = &Object::ActiveObjects[baseID]; //Pointer to Object::ActiveObjects[baseID] for convinence
-        if (basePointer->position.x + basePointer->getTexture().getSize().x > SCREENWIDTH) {
+        if (basePointer->position.x + basePointer->size.x > SCREENWIDTH) {
             wallCollisionList.push_back(pair<int,int>(basePointer->getID(),Right));
         }
         if (basePointer->position.x < 0) {
             wallCollisionList.push_back(pair<int,int>(basePointer->getID(),Left));
         }
-        if (basePointer->position.y + basePointer->getTexture().getSize().y > SCREENHEIGHT) {
+        if (basePointer->position.y + basePointer->size.y > SCREENHEIGHT) {
             wallCollisionList.push_back(pair<int,int>(basePointer->getID(),Bottom));
         }
         if (basePointer->position.y  < 0) {
@@ -92,29 +92,30 @@ int CollisionManager::resolveWallCollisions() {
 	if (wallCollisionList.empty()) {
         return 1;
     }
-    for (pair<int,int> pair : wallCollisionList) {
-        Object* basePointer = &Object::ActiveObjects[pair.first];
-        
-        if (pair.second == Left || pair.second == Right) {
-            basePointer->velocity.x = -basePointer->velocity.x;
-            if (pair.second == Right) {
-                basePointer->position = Vector2f(basePointer->position.x + (SCREENWIDTH - basePointer->position.x - 64),basePointer->position.y);
-            }
-            else if (pair.second == Left) {
-                basePointer->position = Vector2f(0,basePointer->position.y);
-            }
-        }
-        if (pair.second == Top || pair.second == Bottom) {
-            basePointer->velocity.y = -basePointer->velocity.y;
-            if (pair.second == Top) {
-                basePointer->position = Vector2f(basePointer->position.x, 0);
-            }
-            else if (pair.second == Bottom) {
-                basePointer->position = Vector2f(basePointer->position.x, basePointer->position.y + (SCREENHEIGHT - basePointer->position.y - 64));
-            }
-            
-        }
-    }
-    wallCollisionList.clear();
-    return 0;
+	for (pair<int, int> pair : wallCollisionList) {
+		if (pair.first != -1 && pair.second != -1) {
+			Object* basePointer = &Object::ActiveObjects[pair.first];
+			if (pair.second == Left || pair.second == Right) {
+				basePointer->velocity.x = -basePointer->velocity.x;
+				if (pair.second == Right) {
+					basePointer->position = Vector2f(basePointer->position.x + (SCREENWIDTH - basePointer->position.x - 64), basePointer->position.y);
+				}
+				else if (pair.second == Left) {
+					basePointer->position = Vector2f(0, basePointer->position.y);
+				}
+			}
+			if (pair.second == Top || pair.second == Bottom) {
+				basePointer->velocity.y = -basePointer->velocity.y;
+				if (pair.second == Top) {
+					basePointer->position = Vector2f(basePointer->position.x, 0);
+				}
+				else if (pair.second == Bottom) {
+					basePointer->position = Vector2f(basePointer->position.x, basePointer->position.y + (SCREENHEIGHT - basePointer->position.y - 64));
+				}
+
+			}
+		}
+		wallCollisionList.clear();
+		return 0;
+	}
 }
